@@ -83,7 +83,10 @@ export default function ProductListView() {
 
     const [filters, setFilters] = useState(defaultFilters)
 
-    const { products, productsLoading, productsEmpty } = useGetProducts()
+    const { products, productsLoading, productsEmpty } = useGetProducts({
+        page: table.page,
+        rowsPerPage: table.rowsPerPage,
+    })
 
     const confirm = useBoolean()
 

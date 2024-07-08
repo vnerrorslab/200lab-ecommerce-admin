@@ -2,7 +2,7 @@ import { _id } from 'src/_mock/assets'
 
 // ----------------------------------------------------------------------
 
-const MOCK_ID = _id[1]
+const MOCK_ID = '30331959-3c59-4127-af0a-6b4a37e1ae75'
 
 const ROOTS = {
     AUTH: '/auth',

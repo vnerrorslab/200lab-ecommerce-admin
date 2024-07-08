@@ -23,10 +23,12 @@ export const fetcher = async (args: string | [string, AxiosRequestConfig]) => {
 
     const res = await axiosInstance.get(url, { ...config })
 
-    return res.data
+    return res.data.data
 }
 
 // ----------------------------------------------------------------------
+
+const VERSION_PREFIX = '/v1'
 
 export const endpoints = {
     auth: {
@@ -36,8 +38,8 @@ export const endpoints = {
         forgotPassword: '',
     },
     product: {
-        list: '',
-        details: '',
+        list: `${VERSION_PREFIX}/products`,
+        details: `${VERSION_PREFIX}/products/`,
         search: '',
     },
 }
