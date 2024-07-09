@@ -15,9 +15,10 @@ interface GetProductsProps {
 export function useGetProducts({ page, rowsPerPage }: GetProductsProps) {
     const url = endpoints.product.list
     const limit = useRef(rowsPerPage * 2)
-    const { data, error, isLoading, isValidating } = useSWR([url], () =>
-        fetcher([url, { params: { limit: limit.current } }])
-    )
+    const args = [url, { params: { limit: limit.current } }]
+    const { data, error, isLoading, isValidating } = useSWR(args, fetcher, {
+        revalidateOnFocus: false,
+    })
     const products: IProductItem[] = data?.map((dataItem: any) => ({
         id: dataItem.id,
         gender: 'Men',
@@ -74,12 +75,18 @@ export function useGetProducts({ page, rowsPerPage }: GetProductsProps) {
         colors: ['#000000', '#FFFFFF'],
     }))
 
+    let dataLength = products ? products.length : 0
+    dataLength =
+        (page + 1) * rowsPerPage < dataLength
+            ? (page + 1) * rowsPerPage
+            : dataLength
+
     useEffect(() => {
-        if (products && products.length === (page + 1) * rowsPerPage) {
+        const neededMoreData = dataLength >= limit.current
+        if (neededMoreData) {
             limit.current += rowsPerPage
-            console.log(` new limitation: ${limit.current}`)
         }
-    }, [page, rowsPerPage, products])
+    }, [dataLength, rowsPerPage])
 
     const memoizedValue = useMemo(
         () => ({
