@@ -323,7 +323,6 @@ export default function ProductListView() {
                             </Table>
                         </Scrollbar>
                     </TableContainer>
-
                     <TablePaginationCustom
                         count={dataFiltered.length}
                         page={table.page}
