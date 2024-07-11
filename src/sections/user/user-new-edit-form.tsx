@@ -45,7 +45,6 @@ export default function UserNewEditForm({ currentUser }: Props) {
             .email('Email must be a valid email address'),
         phoneNumber: Yup.string().required('Phone number is required'),
         address: Yup.string().required('Address is required'),
-        company: Yup.string().required('Company is required'),
         role: Yup.string().required('Role is required'),
         avatarUrl: Yup.mixed<any>().nullable().required('Avatar is required'),
         // not required
@@ -60,7 +59,6 @@ export default function UserNewEditForm({ currentUser }: Props) {
             email: currentUser?.email || '',
             status: currentUser?.status || '',
             address: currentUser?.address || '',
-            company: currentUser?.company || '',
             avatarUrl: currentUser?.avatarUrl || null,
             phoneNumber: currentUser?.phoneNumber || '',
             isVerified: currentUser?.isVerified || true,
