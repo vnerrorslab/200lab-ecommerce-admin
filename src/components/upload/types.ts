@@ -1,6 +1,7 @@
 import { DropzoneOptions } from 'react-dropzone'
 
 import { Theme, SxProps } from '@mui/material/styles'
+import { ImageItem } from 'src/types/image'
 
 // ----------------------------------------------------------------------
 
@@ -18,7 +19,7 @@ export interface UploadProps extends DropzoneOptions {
     helperText?: React.ReactNode
     disableMultiple?: boolean
     //
-    file?: CustomFile | string | null
+    file?: CustomFile | ImageItem | null
     onDelete?: VoidFunction
     //
     files?: (File | string)[]

@@ -56,7 +56,7 @@ type Props = {
 }
 
 export default function ProductDetailsView({ id }: Props) {
-    const { product, productLoading, productError } = useGetProduct(id)
+    const { product, productError } = useGetProduct(id)
 
     const settings = useSettingsContext()
 
@@ -193,7 +193,7 @@ export default function ProductDetailsView({ id }: Props) {
 
     return (
         <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-            {productLoading && renderSkeleton}
+            {!product && renderSkeleton}
 
             {productError && renderError}
 

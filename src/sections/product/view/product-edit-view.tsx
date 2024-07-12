@@ -8,6 +8,7 @@ import { paths } from 'src/routes/paths'
 import { useSettingsContext } from 'src/components/settings'
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs'
 
+import { useGetProduct } from 'src/api/product'
 import ProductNewEditForm from '../product-new-edit-form'
 
 // ----------------------------------------------------------------------
@@ -19,7 +20,7 @@ type Props = {
 export default function ProductEditView({ id }: Props) {
     const settings = useSettingsContext()
 
-    const currentProduct = _productList.find((product) => product.id === id)
+    const { product } = useGetProduct(id)
 
     return (
         <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -31,14 +32,14 @@ export default function ProductEditView({ id }: Props) {
                         name: 'Product',
                         href: paths.dashboard.product.root,
                     },
-                    { name: currentProduct?.name },
+                    { name: product?.name },
                 ]}
                 sx={{
                     mb: { xs: 3, md: 5 },
                 }}
             />
 
-            <ProductNewEditForm currentProduct={currentProduct} />
+            <ProductNewEditForm currentProduct={product} />
         </Container>
     )
 }

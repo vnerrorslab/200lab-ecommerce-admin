@@ -18,7 +18,7 @@ import { RouterLink } from 'src/routes/components'
 
 import { useBoolean } from 'src/hooks/use-boolean'
 
-import { useGetProducts } from 'src/api/product'
+import { deleteProduct, deleteProducts, useGetProducts } from 'src/api/product'
 import { PRODUCT_STOCK_OPTIONS } from 'src/_mock'
 
 import Iconify from 'src/components/iconify'
@@ -124,28 +124,31 @@ export default function ProductListView() {
         [table]
     )
 
-    const handleDeleteRow = useCallback(
-        (id: string) => {
+    const handleDeleteRow = async (id: string) => {
+        try {
             const deleteRow = tableData.filter((row) => row.id !== id)
             setTableData(deleteRow)
-
             table.onUpdatePageDeleteRow(dataInPage.length)
-        },
-        [dataInPage.length, table, tableData]
-    )
+            await deleteProduct(id)
+        } catch (e) {
+            console.log(e)
+        }
+    }
 
-    const handleDeleteRows = useCallback(() => {
+    const handleDeleteRows = () => {
         const deleteRows = tableData.filter(
             (row) => !table.selected.includes(row.id)
         )
         setTableData(deleteRows)
+
+        deleteProducts(table.selected)
 
         table.onUpdatePageDeleteRows({
             totalRows: tableData.length,
             totalRowsInPage: dataInPage.length,
             totalRowsFiltered: dataFiltered.length,
         })
-    }, [dataFiltered.length, dataInPage.length, table, tableData])
+    }
 
     const handleEditRow = useCallback(
         (id: string) => {

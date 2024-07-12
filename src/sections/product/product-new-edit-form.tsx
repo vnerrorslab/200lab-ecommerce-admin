@@ -39,6 +39,7 @@ import FormProvider, {
 } from 'src/components/hook-form'
 
 import { IProductItem } from 'src/types/product'
+import { createOrUpdateProduct } from 'src/api/product'
 
 // ----------------------------------------------------------------------
 
@@ -120,15 +121,17 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
 
     const onSubmit = handleSubmit(async (data) => {
         try {
-            await new Promise((resolve) => setTimeout(resolve, 500))
+            await createOrUpdateProduct({ data, id: currentProduct?.id })
             reset()
             enqueueSnackbar(
                 currentProduct ? 'Update success!' : 'Create success!'
             )
             router.push(paths.dashboard.product.root)
-            console.info('DATA', data)
         } catch (error) {
-            console.error(error)
+            enqueueSnackbar(
+                currentProduct ? 'Update failed!' : 'Create failed!',
+                { variant: 'error' }
+            )
         }
     })
 
