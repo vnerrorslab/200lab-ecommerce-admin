@@ -56,7 +56,7 @@ type Props = {
 }
 
 export default function ProductDetailsView({ id }: Props) {
-    const { product, productError } = useGetProduct(id)
+    const { product, error } = useGetProduct(id)
 
     const settings = useSettingsContext()
 
@@ -86,7 +86,7 @@ export default function ProductDetailsView({ id }: Props) {
     const renderError = (
         <EmptyContent
             filled
-            title={`${productError}`}
+            title={`${error}`}
             action={
                 <Button
                     component={RouterLink}
@@ -195,7 +195,7 @@ export default function ProductDetailsView({ id }: Props) {
         <Container maxWidth={settings.themeStretch ? false : 'lg'}>
             {!product && renderSkeleton}
 
-            {productError && renderError}
+            {error && renderError}
 
             {product && renderProduct}
         </Container>

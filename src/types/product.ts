@@ -1,5 +1,7 @@
 // ----------------------------------------------------------------------
 
+import { ImageItem } from './image'
+
 export type IProductItem = {
     id: string
     name: string
@@ -9,7 +11,7 @@ export type IProductItem = {
     sizes: string[]
     publish: string
     coverUrl: string
-    images: string[]
+    images: ImageItem[]
     colors: string[]
     quantity: number
     category: string

@@ -41,4 +41,7 @@ export const endpoints = {
         details: `${VERSION_PREFIX}/products/`,
         search: '',
     },
+    image: {
+        upload: `${VERSION_PREFIX}/images`,
+    },
 }

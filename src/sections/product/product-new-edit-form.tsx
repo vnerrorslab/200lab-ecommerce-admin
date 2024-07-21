@@ -40,6 +40,8 @@ import FormProvider, {
 
 import { IProductItem } from 'src/types/product'
 import { createOrUpdateProduct } from 'src/api/product'
+import { ImageItem } from 'src/types/image'
+import { uploadImage } from 'src/api/image'
 
 // ----------------------------------------------------------------------
 
@@ -83,7 +85,9 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
             quantity: currentProduct?.quantity || 0,
             priceSale: currentProduct?.priceSale || 0,
             gender: currentProduct?.gender || '',
-            category: currentProduct?.category || '',
+            category:
+                currentProduct?.category ||
+                PRODUCT_CATEGORY_GROUP_OPTIONS[0].classify[0],
             colors: currentProduct?.colors || [],
             sizes: currentProduct?.sizes || [],
             newLabel: currentProduct?.newLabel || {
@@ -105,6 +109,7 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
 
     const {
         reset,
+        setError,
         watch,
         setValue,
         handleSubmit,
@@ -120,6 +125,12 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
     }, [currentProduct, defaultValues, reset])
 
     const onSubmit = handleSubmit(async (data) => {
+        const files = values.images
+        const isNotUploadImage = files?.some((e: any) => e.id === '')
+        if (isNotUploadImage) {
+            setError('images', { message: 'all image must be uploaded first' })
+            return
+        }
         try {
             await createOrUpdateProduct({ data, id: currentProduct?.id })
             reset()
@@ -135,16 +146,36 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
         }
     })
 
+    const handleUploadImage = useCallback(async () => {
+        const files = values.images || []
+        if (files.length === 0) return
+        try {
+            await Promise.all(
+                files.map(async (file, index) => {
+                    if (file.id === '') {
+                        const imageId = await uploadImage(file.data)
+                        files[index].id = imageId
+                    }
+                })
+            )
+            setValue('images', files)
+        } catch (error) {
+            throw new Error(`thowo ${JSON.stringify(error)}`)
+        }
+    }, [setValue, values.images])
     const handleDrop = useCallback(
         (acceptedFiles: File[]) => {
             const files = values.images || []
 
-            const newFiles = acceptedFiles.map((file) =>
-                Object.assign(file, {
-                    preview: URL.createObjectURL(file),
-                })
+            const newFiles: ImageItem[] = acceptedFiles.map(
+                (file) =>
+                    ({
+                        id: '',
+                        data: Object.assign(file, {
+                            preview: URL.createObjectURL(file),
+                        }),
+                    }) satisfies ImageItem
             )
-
             setValue('images', [...files, ...newFiles], {
                 shouldValidate: true,
             })
@@ -156,7 +187,7 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
         (inputFile: File | string) => {
             const filtered =
                 values.images &&
-                values.images?.filter((file) => file !== inputFile)
+                values.images?.filter((file) => file.data !== inputFile)
             setValue('images', filtered)
         },
         [setValue, values.images]
@@ -211,7 +242,7 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
                                 onDrop={handleDrop}
                                 onRemove={handleRemoveFile}
                                 onRemoveAll={handleRemoveAllFiles}
-                                onUpload={() => console.info('ON UPLOAD')}
+                                onUpload={handleUploadImage}
                             />
                         </Stack>
                     </Stack>

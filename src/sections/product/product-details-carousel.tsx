@@ -76,9 +76,8 @@ type Props = {
 
 export default function ProductDetailsCarousel({ product }: Props) {
     const theme = useTheme()
-
     const slides = product.images.map((img) => ({
-        src: img,
+        src: typeof img.data === 'string' ? img.data : '',
     }))
 
     const lightbox = useLightBox(slides)
@@ -175,7 +174,6 @@ export default function ProductDetailsCarousel({ product }: Props) {
             </Carousel>
         </StyledThumbnailsContainer>
     )
-
     return (
         <Box
             sx={{

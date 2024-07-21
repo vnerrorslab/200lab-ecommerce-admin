@@ -1,9 +1,10 @@
 import { useMemo } from 'react'
-
+import { ImageItem } from 'src/types/image'
 import { IProductItem } from 'src/types/product'
 import { _productDetails, _productList } from 'src/_mock'
 import useSWR from 'swr'
 import axios, { endpoints, fetcher } from 'src/utils/axios'
+import { ACCESS_TOKEN } from 'src/config-global'
 
 // ----------------------------------------------------------------------
 interface GetProductsProps {
@@ -120,6 +121,14 @@ export function useGetProduct(productId: string) {
     })
 
     const data = res?.data
+
+    const productImages: ImageItem[] = data?.images.map(
+        (image: any) =>
+            ({
+                id: image.id,
+                data: image.url,
+            }) satisfies ImageItem
+    )
     const product: IProductItem | undefined = data
         ? {
               id: data?.id,
@@ -144,10 +153,7 @@ export function useGetProduct(productId: string) {
                   '13',
               ],
               inventoryType: 'in stock',
-              images: data.images?.map((image: any) => ({
-                  id: image.id,
-                  url: image.url,
-              })),
+              images: productImages,
               code: '38BEE271',
               description:
                   '\n<h6>Specifications</h6>\n<br/>\n<ol>\n  <li>Category</li>\n  <li>Shoes</li>\n</ol>\n\n<br/>\n<ol>\n  <li>Manufacturer</li>\n  <li>Nike</li>\n</ol>\n\n<br/>\n<ol>\n  <li>Serial Number</li>\n  <li>358607726380311</li>\n</ol>\n\n<br/>\n<ol>\n  <li>Ships From</li>\n  <li>United States</li>\n</ol>\n\n<br/>\n<br/>\n\n<h6>Product Details</h6>\n<br/>\n<ul>\n  <li><p>The foam sockliner feels soft and comfortable</p></li>\n  <li><p>Pull tab</p></li>\n  <li><p>Not intended for use as Personal Protective Equipment</p></li>\n  <li><p>Colour Shown: White/Black/Oxygen Purple/Action Grape</p></li>\n  <li><p>Style: 921826-109</p></li>\n  <li><p>Country/Region of Origin: China</p></li>\n</ul>\n\n<br/>\n<br/>\n\n<h6>Benefits</h6>\n<br/>\n<ul>\n  <li>\n    <p>Mesh and synthetic materials on the upper keep the fluid look of the OG while adding comfort</p>\n    and durability.\n  </li>\n  <li>\n    <p>Originally designed for performance running, the full-length Max Air unit adds soft, comfortable cushio</p>\n    ning underfoot.\n  </li>\n  <li><p>The foam midsole feels springy and soft.</p></li>\n  <li><p>The rubber outsole adds traction and durability.</p></li>\n</ul>\n\n<br/>\n<br/>\n\n<h6>Delivery and Returns</h6>\n<br/>\n<p>Your order of $200 or more gets free standard delivery.</p>\n<br/>\n<ul>\n  <li><p>Standard delivered 4-5 Business Days</p></li>\n  <li><p>Express delivered 2-4 Business Days</p></li>\n</ul>\n<br/>\n<p>Orders are processed and delivered Monday-Friday (excluding public holidays)</p>\n\n',
@@ -189,33 +195,18 @@ export async function createOrUpdateProduct({
     data: any
     id?: string
 }) {
-    const payload = JSON.stringify(
-        id
-            ? {
-                  name: data.name,
-                  imageUrl: data.images[0].url,
-                  price: `${data.price}`,
-                  quantity: `${data.quantity}`,
-                  brandId: 'ebfabe9a-cf2f-4b44-9e06-700b1ffdc911',
-                  categoryId: '0012ef1a-b5b8-4f16-804c-9ecfc112d06b',
-                  description: 'mock description',
-              }
-            : {
-                  name: data.name,
-                  images: data.images.map((image: any) =>
-                      image.id !== '' ? image.id : ''
-                  ),
-                  price: `${data.price}`,
-                  quantity: `${data.quantity}`,
-                  brandId: 'ebfabe9a-cf2f-4b44-9e06-700b1ffdc911',
-                  categoryId: '0012ef1a-b5b8-4f16-804c-9ecfc112d06b',
-                  description: data.description,
-              }
-    )
-    const accessToken = `${sessionStorage.getItem('accessToken')}`
+    const payload = JSON.stringify({
+        name: data.name,
+        images: data.images.map((image: any) => image.id),
+        price: `${data.price}`,
+        quantity: `${data.quantity}`,
+        brandId: 'ebfabe9a-cf2f-4b44-9e06-700b1ffdc911',
+        categoryId: '0012ef1a-b5b8-4f16-804c-9ecfc112d06b',
+        description: 'mock description because real one is too long',
+    })
     const headers = {
         'Content-Type': 'application/json',
-        Authorization: accessToken,
+        Authorization: `Bearer ${ACCESS_TOKEN}`,
     }
     try {
         if (id) {
@@ -245,7 +236,7 @@ export async function createOrUpdateProduct({
 export async function deleteProduct(productId: string) {
     try {
         const headers = {
-            Authorization: axios.defaults.headers.common.Authorization,
+            Authorization: `Bearer ${ACCESS_TOKEN}`,
             Accept: '*/*',
         }
         const res = await axios.delete(
@@ -263,7 +254,7 @@ export async function deleteProduct(productId: string) {
 export async function deleteProducts(productIds: string[]) {
     try {
         const headers = {
-            Authorization: axios.defaults.headers.common.Authorization,
+            Authorization: `Bearer ${ACCESS_TOKEN}`,
             Accept: '*/*',
         }
         await productIds.map(async (id) => {

@@ -1,7 +1,7 @@
 import { Controller, useFormContext } from 'react-hook-form'
 
 import FormHelperText from '@mui/material/FormHelperText'
-
+import { ImageItem } from 'src/types/image'
 import { Upload, UploadBox, UploadProps, UploadAvatar } from '../upload'
 
 // ----------------------------------------------------------------------
@@ -62,7 +62,6 @@ export function RHFUploadBox({ name, ...other }: Props) {
 
 export function RHFUpload({ name, multiple, helperText, ...other }: Props) {
     const { control } = useFormContext()
-
     return (
         <Controller
             name={name}
@@ -72,7 +71,7 @@ export function RHFUpload({ name, multiple, helperText, ...other }: Props) {
                     <Upload
                         multiple
                         accept={{ 'image/*': [] }}
-                        files={field.value}
+                        files={field.value.map((file: ImageItem) => file.data)}
                         error={!!error}
                         helperText={
                             (!!error || helperText) && (
@@ -86,7 +85,7 @@ export function RHFUpload({ name, multiple, helperText, ...other }: Props) {
                 ) : (
                     <Upload
                         accept={{ 'image/*': [] }}
-                        file={field.value}
+                        file={field.value.data}
                         error={!!error}
                         helperText={
                             (!!error || helperText) && (
